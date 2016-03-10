@@ -43,5 +43,11 @@ describe('BookIndexer tests', function() {
       expect(indexer.index).toBeDefined();
       expect(Object.keys(indexer.index).length).toBeTruthy();
     });
+
+    it('should map the string keys to the correct objects in the JSON array.', function() {
+      expect(indexer.index.alice).toEqual([0]);
+      expect(indexer.index.dwarf).toEqual([1]);
+    });
+
   });
 });
