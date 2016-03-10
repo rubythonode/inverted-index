@@ -57,6 +57,13 @@ describe('BookIndexer tests', function() {
       expect(indexer.searchIndex('alice').alice).toEqual([0]);
     });
 
+    it('should be able to handle a string of arguments', function() {
+      var searchString = 'James and Alice are in love';
+      var keyWords = ['james', 'alice', 'love'];
+      var searchResult = indexer.searchIndex(searchString);
+
+      expect(Object.keys(searchResult).sort()).toEqual(keyWords.sort());
+    });
   });
 
   describe('Get Index', function() {
