@@ -35,6 +35,19 @@ describe('BookIndexer tests', function() {
       expect(Array.isArray(indexer.rawData)).toBe(true);
       expect(indexer.rawData.length).toBeTruthy();
     });
+
+    it('should contain Book Objects whose title and text are strings.', function() {
+      indexer.rawData.forEach(function(item) {
+        expect(typeof item).toBe(typeof {});
+
+        // Check that both the title and text are strings.
+        for (var elem in item) {
+          if (item.hasOwnProperty(elem)) {
+            expect(typeof item[elem]).toBe(typeof '');
+          }
+        }
+      });
+    });
   });
 
   describe('Populate Index', function() {
@@ -78,10 +91,6 @@ describe('BookIndexer tests', function() {
 
       expect(Object.keys(result).sort())
         .toEqual(['alice', 'dwarf', 'king', 'land', 'wonderland']);
-
-      // Ensure that
-      expect(result.dwarf).toEqual([1]);
-      expect(result.king).toEqual('Not found');
     });
 
     it('should return correct search results for varied search terms', function() {
