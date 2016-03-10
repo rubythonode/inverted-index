@@ -21,7 +21,7 @@
 
     // A list of words that have no impact on general meaning of the sentence.
     // http://www.ranks.nl/stopwords
-    _this.stopWords = ['a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an',
+    var stopWords = ['a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an',
       'and', 'any', 'are', 'aren\'t', 'as', 'at', 'be', 'because', 'been', 'before',
       'being', 'below', 'between', 'both', 'but', 'by', 'can\'t', 'cannot', 'could',
       'couldn\'t',
@@ -57,7 +57,10 @@
       return _this.index;
     };
 
-    _this.searchIndex = function(query) {
+    _this.searchIndex = function( /* arguments */ ) {
+
+      // Create an `Array` query from the arguments.
+      var query = processSearchTerms(arguments);
 
       // Process the query the same way raw data is processed,
       // then search for the clean query in  the index.
@@ -98,7 +101,6 @@
         var fs = require('fs');
         _this.rawData = JSON.parse(fs.readFileSync(file).toString());
         makeIndex();
-        return;
       } else {
         return fetch(file)
           .then(function(response) {
@@ -158,29 +160,47 @@
        *     - Remove stop words from that array.
        *     - Return an Array of strings.
        *
-       * If data is an `Array`:
-       * 		- Lowercase every string in that Array.
-       * 		- Remove stop words from the Array.
-       * 		- Return the Array.
+       * If data is an `Array` or is Array-like:
+       * 		- Join up it's elements and proceed to Case String.
        */
 
-      function isAStopWord(item) {
-        return _this.stopWords.indexOf(item) === -1;
-      }
-
-      if (Array.isArray(data)) {
-        return data
-          .map(function toLower(item) {
-            return item.toLowerCase();
-          })
-          .filter(isAStopWord);
+      // Cannot use Array.isArray here, since it won't work for Array-like objects.
+      if (typeof data !== 'string' && data.length) {
+        data = data.join(' ');
       }
 
       return data
         .toLowerCase()
         .replace(/[,.;:!@#$%^&*()]/g, '')
         .split(' ')
-        .filter(isAStopWord);
+        .filter(function(item) {
+          return stopWords.indexOf(item) === -1;
+        });
+    }
+
+    function processSearchTerms(args) {
+      /**
+       * Process the `arguments` array-like object.
+       * This may contain a mixture of `String`s and `Array`s.
+       * This DOES NOT handle either nested elements or objects.
+       */
+
+      var query = [];
+
+      // Transform args into an actual JavaScript `Array`
+      args = [].slice.call(args);
+
+      args.forEach(function(item) {
+        if (typeof item !== 'string' && item.length) {
+          query.push(item.join(' '));
+        } else if (typeof item === 'string') {
+
+          // Will fail if item was declared using `new String`.
+          query.push(item);
+        }
+      });
+
+      return query;
     }
   }
 

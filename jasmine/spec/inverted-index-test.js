@@ -55,6 +55,7 @@ describe('BookIndexer tests', function() {
 
     it('should return the correct index for searched items', function() {
       expect(indexer.searchIndex('alice').alice).toEqual([0]);
+      expect(indexer.searchIndex('ring').ring).toEqual([1]);
     });
 
     it('should be able to handle a string of arguments', function() {
@@ -70,6 +71,24 @@ describe('BookIndexer tests', function() {
       var result = indexer.searchIndex(searchTerms);
 
       expect(Object.keys(result).sort()).toEqual(searchTerms.sort());
+    });
+
+    it('should be able to take a varied number of search terms', function() {
+      var result = indexer.searchIndex('alice', 'dwarf', 'wonderland', ['king', 'land']);
+
+      expect(Object.keys(result).sort())
+        .toEqual(['alice', 'dwarf', 'king', 'land', 'wonderland']);
+
+      // Ensure that
+      expect(result.dwarf).toEqual([1]);
+      expect(result.king).toEqual('Not found');
+    });
+
+    it('should return correct search results for varied search terms', function() {
+      var result = indexer.searchIndex('alice', 'dwarf', 'wonderland', ['king', 'land']);
+
+      expect(result.dwarf).toEqual([1]);
+      expect(result.king).toEqual('Not found');
     });
 
   });
