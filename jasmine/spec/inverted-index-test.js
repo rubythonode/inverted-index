@@ -50,4 +50,12 @@ describe('BookIndexer tests', function() {
     });
 
   });
+
+  describe('Search Index', function(){
+
+    it('should return the correct index for searched items', function(){
+      expect(indexer.searchIndex('alice').alice).toEqual([0]);
+    });
+
+  });
 });

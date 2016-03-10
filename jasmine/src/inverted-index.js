@@ -48,6 +48,33 @@
       return readData(file);
     };
 
+    _this.searchIndex = function(query) {
+
+      // Process the query the same way raw data is processed,
+      // then search for the clean query in  the index.
+
+      var foundItems = {};
+      var itemLocations;
+
+      processData(query)
+        .forEach(function(item){
+          itemLocations = _this.index[item] || false;
+
+          if(itemLocations) {
+            if(!foundItems.hasOwnProperty(item)) {
+
+              // Only add an item if you didn't already add it.
+              foundItems[item] = itemLocations;
+            }
+          }
+          else {
+            foundItems[item] = 'Not found';
+          }
+        });
+
+      return foundItems;
+    };
+
     function readData(file) {
       /**
        * Read a JSON file and store it's contents.
