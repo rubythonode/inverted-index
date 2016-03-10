@@ -58,4 +58,11 @@ describe('BookIndexer tests', function() {
     });
 
   });
+
+  describe('Get Index', function() {
+
+    it('should return an accurate index of the contents of the JSON file', function() {
+      expect(indexer.getIndex()).toEqual(indexer.index);
+    });
+  });
 });

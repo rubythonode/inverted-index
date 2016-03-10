@@ -53,6 +53,10 @@
       return readData(file);
     };
 
+    _this.getIndex = function() {
+      return _this.index;
+    };
+
     _this.searchIndex = function(query) {
 
       // Process the query the same way raw data is processed,
