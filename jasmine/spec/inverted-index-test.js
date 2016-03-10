@@ -64,6 +64,14 @@ describe('BookIndexer tests', function() {
 
       expect(Object.keys(searchResult).sort()).toEqual(keyWords.sort());
     });
+
+    it('should be able to handle an array of search terms', function() {
+      var searchTerms = ['james', 'alice', 'dwarf', 'ring', 'king'];
+      var result = indexer.searchIndex(searchTerms);
+
+      expect(Object.keys(result).sort()).toEqual(searchTerms.sort());
+    });
+
   });
 
   describe('Get Index', function() {

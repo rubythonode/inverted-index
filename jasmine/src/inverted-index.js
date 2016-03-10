@@ -157,15 +157,30 @@
        *     - Convert it into an array.
        *     - Remove stop words from that array.
        *     - Return an Array of strings.
+       *
+       * If data is an `Array`:
+       * 		- Lowercase every string in that Array.
+       * 		- Remove stop words from the Array.
+       * 		- Return the Array.
        */
+
+      function isAStopWord(item) {
+        return _this.stopWords.indexOf(item) === -1;
+      }
+
+      if (Array.isArray(data)) {
+        return data
+          .map(function toLower(item) {
+            return item.toLowerCase();
+          })
+          .filter(isAStopWord);
+      }
 
       return data
         .toLowerCase()
         .replace(/[,.;:!@#$%^&*()]/g, '')
         .split(' ')
-        .filter(function(item) {
-          return _this.stopWords.indexOf(item) === -1;
-        });
+        .filter(isAStopWord);
     }
   }
 
