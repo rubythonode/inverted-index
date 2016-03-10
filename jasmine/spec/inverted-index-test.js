@@ -23,10 +23,10 @@ describe('BookIndexer tests', function() {
      * resolve before running tests.
      */
     if (RUNNING_ON_NODE) {
-      indexer.readData('books.json');
+      indexer.createIndex('books.json');
       done();
     } else {
-      indexer.readData('books.json').then(done);
+      indexer.createIndex('books.json').then(done);
     }
   });
 
@@ -34,6 +34,14 @@ describe('BookIndexer tests', function() {
     it('"books.json" should not be empty', function() {
       expect(Array.isArray(indexer.rawData)).toBe(true);
       expect(indexer.rawData.length).toBeTruthy();
+    });
+  });
+
+  describe('Populate Index', function() {
+
+    it('should create an index after reading the data', function() {
+      expect(indexer.index).toBeDefined();
+      expect(Object.keys(indexer.index).length).toBeTruthy();
     });
   });
 });

@@ -12,25 +12,58 @@
 
   function BookIndexer() {
 
-    // alias `this` to self.
-    var self = this;
+    // alias `this` to _this.
+    var _this = this;
 
-    self.rawData = [];
-    self.index = {};
+    // Define the variables this indexer will need.
+    _this.rawData = [];
+    _this.index = {};
 
-    this.readData = function(file) {
+    // A list of words that have no impact on general meaning of the sentence.
+    // http://www.ranks.nl/stopwords
+    _this.stopWords = [
+      'a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an', 'and', 'any', 'are',
+      'aren\'t', 'as', 'at', 'be', 'because', 'been', 'before', 'being', 'below', 'between', 'both',
+      'but', 'by', 'can\'t', 'cannot', 'could', 'couldn\'t', 'did', 'didn\'t', 'do', 'does', 'doesn\'t',
+      'doing', 'don\'t', 'down', 'during', 'each', 'few', 'for', 'from', 'further', 'had', 'hadn\'t',
+      'has', 'hasn\'t', 'have', 'haven\'t', 'having', 'he', 'he\'d', 'he\'ll', 'he\'s', 'her', 'here',
+      'here\'s', 'hers', 'herself', 'him', 'himself', 'his', 'how', 'how\'s', 'i', 'i\'d', 'i\'ll',
+      'i\'m', 'i\'ve', 'if', 'in', 'into', 'is', 'isn\'t', 'it', 'it\'s', 'its', 'itself', 'let\'s',
+      'me', 'more', 'most', 'mustn\'t', 'my', 'myself', 'no', 'nor', 'not', 'of', 'off', 'on', 'once',
+      'only', 'or', 'other', 'ought', 'our', 'ours', 'ourselves', 'out', 'over', 'own', 'same',
+      'shan\'t', 'she', 'she\'d', 'she\'ll', 'she\'s', 'should', 'shouldn\'t', 'so', 'some', 'such',
+      'than', 'that', 'that\'s', 'the', 'their', 'theirs', 'them', 'themselves', 'then', 'there',
+      'there\'s', 'these', 'they', 'they\'d', 'they\'ll', 'they\'re', 'they\'ve', 'this', 'those',
+      'through', 'to', 'too', 'under', 'until', 'up', 'very', 'was', 'wasn\'t', 'we', 'we\'d',
+      'we\'ll', 'we\'re', 'we\'ve', 'were', 'weren\'t', 'what', 'what\'s', 'when', 'when\'s',
+      'where', 'where\'s', 'which', 'while', 'who', 'who\'s', 'whom', 'why', 'why\'s', 'with',
+      'won\'t', 'would', 'wouldn\'t', 'you', 'you\'d', 'you\'ll', 'you\'re', 'you\'ve', 'your',
+      'yours', 'yourself', 'yourselves'
+    ];
+
+    _this.createIndex = function(file) {
+      // Read a data file and create an index from it.
+      //
+      // TODO: Make this function return a Promise to attain a uniform API.
+      return readData(file);
+    };
+
+    function readData(file) {
       /**
        * Read a JSON file and store it's contents.
        * If we are running on NodeJS, read the file synchronously.
        * If not, we must be running on the browser.
        * Utilise the relatively new `fetch` API to fetch and parse the JSON file.
+       * Call `makeIndex` after a successful read.
        *
        * @param  {String} file path to file that's to be read.
        */
 
       if (RUNNING_ON_NODE) {
         var fs = require('fs');
-        self.rawData = JSON.parse(fs.readFileSync(file).toString());
+        _this.rawData = JSON.parse(fs.readFileSync(file).toString());
+        makeIndex();
+        return;
       } else {
         return fetch(file)
           .then(function(response) {
@@ -39,17 +72,69 @@
             return response.json();
           })
           .then(function(data) {
-            self.rawData = data;
+            _this.rawData = data;
+            makeIndex();
           })
           .catch(function(err) {
             throw err;
           });
       }
-    };
+    }
+
+    function makeIndex() {
+      /**
+       * Create an index of the data read.
+       *
+       * TODO: Make this function return Promise objects.
+       */
+
+      // Create the index.
+      _this.rawData.forEach(function(book, bookIndex) {
+
+        // Concat the title and book text for every book and index them as one.
+        var completeData = book.title + ' ' + book.text;
+
+        processData(completeData)
+          .forEach(function(item) {
+            if (!_this.index.hasOwnProperty(item)) {
+
+              // If this word is not already in the index, add it.
+              _this.index[item] = [bookIndex];
+            } else {
+
+              // Add the word's location to the index if the location is not already
+              // associated with this word. Otherwise ignore it.
+              if (_this.index[item].indexOf(bookIndex) === -1) {
+                _this.index[item].push(bookIndex);
+              }
+            }
+          });
+      });
+    }
+
+    function processData(data) {
+      /**
+       * Process data.
+       *
+       * If data is a `String`:
+       *     - Lowercase the string
+       *     - Remove punctuations.
+       *     - Convert it into an array.
+       *     - Remove stop words from that array.
+       *     - Return an Array of strings.
+       */
+
+      return data
+        .toLowerCase()
+        .replace(/[,.;:!@#$%^&*()]/g, '')
+        .split(' ')
+        .filter(function(item) {
+          return _this.stopWords.indexOf(item) === -1;
+        });
+    }
   }
 
   // If on Node, export the module.
-  console.log(RUNNING_ON_NODE);
   if (RUNNING_ON_NODE) {
     module.exports = BookIndexer;
   } else {
