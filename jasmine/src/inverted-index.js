@@ -53,8 +53,28 @@
       return readData(file);
     };
 
-    _this.getIndex = function() {
-      return _this.index;
+    _this.getIndex = function(bookIndex) {
+      bookIndex = Number(bookIndex) || null;
+
+      // If no book was given, return the whole index.
+      if (!bookIndex) {
+        return _this.index;
+      } else {
+        // If a particular book's index was given, create a subIndex with the words that appear in
+        // the specified book and return that.
+        var keys = Object.keys(_this.index);
+        var subIndex = {};
+        var itemLocations;
+
+        keys.forEach(function(key) {
+          itemLocations = _this.index[key];
+          if (itemLocations.indexOf(bookIndex) !== -1) {
+            subIndex[key] = itemLocations;
+          }
+        });
+
+        return subIndex;
+      }
     };
 
     _this.searchIndex = function( /* arguments */ ) {
