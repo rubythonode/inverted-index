@@ -11,6 +11,7 @@ var indexer = new Indexer();
 ```
 
 To use this module on the NodeJS console,
+
 1. Clone this repository.
 
 2. Change your working directory into `inverted-index/jasmine`

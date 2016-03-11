@@ -100,6 +100,19 @@ describe('BookIndexer tests', function() {
       expect(result.king).toEqual('Not found');
     });
 
+    it('should be able to handle nested arrays of strings', function() {
+      var searchTerms = [
+        'rings', ['fellowship', ['evil', 'people', ['are', 'bad']]],
+        'some', 'James, alice and joan are in love'
+      ];
+
+      var result = indexer.searchIndex(searchTerms);
+
+      expect(result.alice).toEqual([0]);
+      expect(result.fellowship).toEqual([1]);
+      expect(result.bad).toEqual('Not found');
+    });
+
     if (!RUNNING_ON_NODE) {
       it('should not take long to execute', function() {
         var searchTerms = [

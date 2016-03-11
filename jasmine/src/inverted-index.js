@@ -93,6 +93,10 @@
       var itemLocations;
 
       processData(query)
+        .filter(function(item) {
+          // Filter out any empty strings.
+          return !!item;
+        })
         .forEach(function(item) {
           itemLocations = _this.index[item] || false;
 
@@ -194,6 +198,7 @@
        */
 
       if (Array.isArray(data)) {
+        // If this data in an array, join it up to a long string and process that.
         data = data.join(' ');
       }
 
@@ -210,23 +215,18 @@
       /**
        * Process the `arguments` array-like object.
        * This may contain a mixture of `String`s and `Array`s.
-       * This DOES NOT handle either nested elements or objects.
+       * Start by converting `arguments` into a real JS `Array`.
+       *
+       * Quick, dirty way of flattening a nested array:
+       * 		- turn it into a string.
+       * 		- split using a comma as the delimiter
+       * 		- Smile :)
        */
 
-      var query = [];
-
-      // Transform args into an actual JavaScript `Array`
-      args = [].slice.call(args);
-
-      args.forEach(function(item) {
-        if (Array.isArray(item)) {
-          query.push(item.join(' '));
-        } else if (typeof item === 'string') { // Will fail if item was declared using `new String`.
-          query.push(item);
-        }
-      });
-
-      return query;
+      return Array.prototype
+        .slice.call(args) // Transform into a real JS array.
+        .toString()
+        .split(',');
     }
   }
 
