@@ -129,13 +129,17 @@ describe('BookIndexer tests', function() {
     it(
       'should return an index of a particular book when given that book\'s index as a parameter',
       function() {
-        var index = indexer.getIndex('1');
 
-        for (var prop in index) {
-          if (index.hasOwnProperty(prop)) {
-            expect(index[prop]).toEqual([1]);
+        function verify(obj, expectedArray) {
+          for (var prop in obj) {
+            if (obj.hasOwnProperty(prop)) {
+              expect(obj[prop]).toEqual(expectedArray);
+            }
           }
         }
+
+        verify(indexer.getIndex('1'), [1]);
+        verify(indexer.getIndex('0'), [0]);
       });
   });
 

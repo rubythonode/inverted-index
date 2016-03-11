@@ -54,10 +54,11 @@
     };
 
     _this.getIndex = function(docIndex) {
-      docIndex = Number(docIndex) || null;
+      docIndex = docIndex || null;
+      docIndex = docIndex ? Number(docIndex) : null;
 
       // If no doc was given, return the whole index.
-      if (!docIndex) {
+      if (docIndex === null) {
         return _this.index;
       } else {
         // If a particular doc's index was given, create a subIndex with the words that appear in
