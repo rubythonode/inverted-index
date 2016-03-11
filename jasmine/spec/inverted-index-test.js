@@ -100,6 +100,24 @@ describe('BookIndexer tests', function() {
       expect(result.king).toEqual('Not found');
     });
 
+    if (!RUNNING_ON_NODE) {
+      it('should not take long to execute', function() {
+        var searchTerms = [
+          'alice', 'dwarf', 'king', 'ring', 'wonderland', 'imagination', 'world',
+          'falls',
+          'lord', 'fellowship', 'unusual', 'alliance', 'elf', 'man', 'wizard',
+          'hobbit',
+          'powerful', 'destroy', 'rabbit', 'hole'
+        ];
+
+        var start = window.performance.now();
+        indexer.searchIndex(searchTerms);
+        var timeTaken = window.performance.now() - start;
+
+        expect(timeTaken).toBeLessThan(1);
+      });
+    }
+
   });
 
   describe('Get Index', function() {
@@ -120,4 +138,5 @@ describe('BookIndexer tests', function() {
         }
       });
   });
+
 });

@@ -184,8 +184,7 @@
        * 		- Join up it's elements and proceed to Case String.
        */
 
-      // Cannot use Array.isArray here, since it won't work for Array-like objects.
-      if (typeof data !== 'string' && data.length) {
+      if (Array.isArray(data)) {
         data = data.join(' ');
       }
 
@@ -211,11 +210,9 @@
       args = [].slice.call(args);
 
       args.forEach(function(item) {
-        if (typeof item !== 'string' && item.length) {
+        if (Array.isArray(item)) {
           query.push(item.join(' '));
-        } else if (typeof item === 'string') {
-
-          // Will fail if item was declared using `new String`.
+        } else if (typeof item === 'string') { // Will fail if item was declared using `new String`.
           query.push(item);
         }
       });
