@@ -10,7 +10,7 @@
   var RUNNING_ON_NODE = (
     typeof module !== 'undefined' && typeof module.exports !== 'undefined');
 
-  function BookIndexer() {
+  function Indexer() {
 
     // alias `this` to _this.
     var _this = this;
@@ -53,22 +53,22 @@
       return readData(file);
     };
 
-    _this.getIndex = function(bookIndex) {
-      bookIndex = Number(bookIndex) || null;
+    _this.getIndex = function(docIndex) {
+      docIndex = Number(docIndex) || null;
 
-      // If no book was given, return the whole index.
-      if (!bookIndex) {
+      // If no doc was given, return the whole index.
+      if (!docIndex) {
         return _this.index;
       } else {
-        // If a particular book's index was given, create a subIndex with the words that appear in
-        // the specified book and return that.
+        // If a particular doc's index was given, create a subIndex with the words that appear in
+        // the specified doc and return that.
         var keys = Object.keys(_this.index);
         var subIndex = {};
         var itemLocations;
 
         keys.forEach(function(key) {
           itemLocations = _this.index[key];
-          if (itemLocations.indexOf(bookIndex) !== -1) {
+          if (itemLocations.indexOf(docIndex) !== -1) {
             subIndex[key] = itemLocations;
           }
         });
@@ -146,23 +146,28 @@
        */
 
       // Create the index.
-      _this.rawData.forEach(function(book, bookIndex) {
+      _this.rawData.forEach(function(doc, docIndex) {
 
-        // Concat the title and book text for every book and index them as one.
-        var completeData = book.title + ' ' + book.text;
+        // Hold all elements of this doc in an array and index them all at once.
+        var completeData = [];
+        for (var element in doc) {
+          if (doc.hasOwnProperty(element)) {
+            completeData.push(doc[element]);
+          }
+        }
 
         processData(completeData)
           .forEach(function(item) {
             if (!_this.index.hasOwnProperty(item)) {
 
               // If this word is not already in the index, add it.
-              _this.index[item] = [bookIndex];
+              _this.index[item] = [docIndex];
             } else {
 
               // Add the word's location to the index if the location is not already
               // associated with this word. Otherwise ignore it.
-              if (_this.index[item].indexOf(bookIndex) === -1) {
-                _this.index[item].push(bookIndex);
+              if (_this.index[item].indexOf(docIndex) === -1) {
+                _this.index[item].push(docIndex);
               }
             }
           });
@@ -223,9 +228,9 @@
 
   // If on Node, export the module.
   if (RUNNING_ON_NODE) {
-    module.exports = BookIndexer;
+    module.exports = Indexer;
   } else {
     // Else, attach it to the window namespace.
-    window.BookIndexer = BookIndexer;
+    window.Indexer = Indexer;
   }
 })();

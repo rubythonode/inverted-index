@@ -9,12 +9,12 @@ var RUNNING_ON_NODE = (
   typeof module !== 'undefined' && typeof module.exports !== 'undefined');
 
 if (RUNNING_ON_NODE) {
-  var BookIndexer = require('../src/inverted-index');
+  var Indexer = require('../src/inverted-index');
 }
 
 describe('BookIndexer tests', function() {
 
-  var indexer = new BookIndexer();
+  var indexer = new Indexer();
 
   beforeEach(function(done) {
     /**
