@@ -101,17 +101,30 @@ The `searchIndex` method can take in a varied number of string search terms or a
 
 Consider the following use case:
 ```javascript
+// Searching a single term
 indexer.searchIndex('alice');
-// { alice: [ 0 ] }
+// => { alice: [ 0 ] }
 
+// Searching for two terms that are basically similar.
 indexer.searchIndex('alice', 'Alice');  // But don't do this.
-// { alice: [ 0 ] }
+// => { alice: [ 0 ] }
 
+// Searching with an array of search strings.
 indexer.searchIndex(['alice', 'ring', 'hobbit', 'land']);
-// { alice: [ 0 ], ring: [ 1 ], hobbit: [ 1 ], land: 'Not found' }
+//=> { alice: [ 0 ], ring: [ 1 ], hobbit: [ 1 ], land: 'Not found' }
 
+// Searching with mixture of strings and arrays.
 indexer.searchIndex('alice', 'wonderland', ['hobbit', 'elf', 'dwarf'], 'lord');
-// { alice: [ 0 ], wonderland: [ 0 ], hobbit: [ 1 ], elf: [ 1 ], dwarf: [ 1 ], lord: [ 1 ] }
+// => { alice: [ 0 ], wonderland: [ 0 ], hobbit: [ 1 ], elf: [ 1 ], dwarf: [ 1 ], lord: [ 1 ] }
+
+// Searching with a mixture of nested arrays and strings.
+indexer.searchIndex(
+    ['rings', ['fellowship', ['evil', 'people', ['are', 'bad']]], 'some', 'James, alice and joan'])
+// => {
+//      rings: [ 1 ], fellowship: [ 1 ], evil: 'Not found',
+//      people: 'Not found', bad: 'Not found', james: 'Not found',
+//      alice: [ 0 ], joan: 'Not found'
+//    }
 ```
 
 
@@ -144,7 +157,7 @@ steps:
         ```
             $ python3 -m http.server --bind 127.0.0.1 8080
         ```
-    Then open `SpecRunner.html`.
+    Visit http://127.0.0.1:8080/ Then open `SpecRunner.html`.
 
     Running this server is essential - the data file will be fetched asynchronously.
 
@@ -162,14 +175,6 @@ steps:
 ## Caveats
 The `Indexer` module only does simple indexing. It does not handle decomposition of words into their
 root words (_searching for `land` yields `Not found` yet there's `land` in `wonderland`_).
-
-The `searchIndex` cannot handle nested parameters. Providing it with nested parameters will
-not raise an error, but the result will not be what you expect.
-
-```javascript
-indexer.searchIndex(['alice', ['nested'], 'lord'])
-// { alice: [ 0 ], nested: 'Not found', lord: [ 1 ] }
-```
 
 
 The `getIndex` method parameter has to be a string. Otherwise, you will not be able to obtain
