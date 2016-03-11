@@ -82,6 +82,9 @@
 
       // Create an `Array` query from the arguments.
       var query = processSearchTerms(arguments);
+      if (!query.length) {
+        return {};
+      }
 
       // Process the query the same way raw data is processed,
       // then search for the clean query in  the index.
