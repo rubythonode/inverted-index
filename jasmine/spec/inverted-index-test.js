@@ -10,6 +10,8 @@ var RUNNING_ON_NODE = (
 
 if (RUNNING_ON_NODE) {
   var Indexer = require('../src/inverted-index');
+} else {
+  var Indexer = window.Indexer;
 }
 
 describe('BookIndexer tests', function() {
@@ -36,18 +38,19 @@ describe('BookIndexer tests', function() {
       expect(indexer.rawData.length).toBeTruthy();
     });
 
-    it('should contain Book Objects whose title and text are strings.', function() {
-      indexer.rawData.forEach(function(item) {
-        expect(typeof item).toBe(typeof {});
+    it('should contain Book Objects whose title and text are strings.',
+      function() {
+        indexer.rawData.forEach(function(item) {
+          expect(typeof item).toBe(typeof {});
 
-        // Check that both the title and text are strings.
-        for (var elem in item) {
-          if (item.hasOwnProperty(elem)) {
-            expect(typeof item[elem]).toBe(typeof '');
+          // Check that both the title and text are strings.
+          for (var elem in item) {
+            if (item.hasOwnProperty(elem)) {
+              expect(typeof item[elem]).toBe(typeof '');
+            }
           }
-        }
+        });
       });
-    });
   });
 
   describe('Populate Index', function() {
@@ -57,10 +60,12 @@ describe('BookIndexer tests', function() {
       expect(Object.keys(indexer.index).length).toBeTruthy();
     });
 
-    it('should map the string keys to the correct objects in the JSON array.', function() {
-      expect(indexer.index.alice).toEqual([0]);
-      expect(indexer.index.dwarf).toEqual([1]);
-    });
+    it(
+      'should map the string keys to the correct objects in the JSON array.',
+      function() {
+        expect(indexer.index.alice).toEqual([0]);
+        expect(indexer.index.dwarf).toEqual([1]);
+      });
 
   });
 
@@ -86,19 +91,23 @@ describe('BookIndexer tests', function() {
       expect(Object.keys(result).sort()).toEqual(searchTerms.sort());
     });
 
-    it('should be able to take a varied number of search terms', function() {
-      var result = indexer.searchIndex('alice', 'dwarf', 'wonderland', ['king', 'land']);
+    it('should be able to take a varied number of search terms',
+      function() {
+        var result = indexer.searchIndex('alice', 'dwarf',
+          'wonderland', ['king', 'land']);
 
-      expect(Object.keys(result).sort())
-        .toEqual(['alice', 'dwarf', 'king', 'land', 'wonderland']);
-    });
+        expect(Object.keys(result).sort())
+          .toEqual(['alice', 'dwarf', 'king', 'land', 'wonderland']);
+      });
 
-    it('should return correct search results for varied search terms', function() {
-      var result = indexer.searchIndex('alice', 'dwarf', 'wonderland', ['king', 'land']);
+    it('should return correct search results for varied search terms',
+      function() {
+        var result = indexer.searchIndex('alice', 'dwarf',
+          'wonderland', ['king', 'land']);
 
-      expect(result.dwarf).toEqual([1]);
-      expect(result.king).toEqual('Not found');
-    });
+        expect(result.dwarf).toEqual([1]);
+        expect(result.king).toEqual('Not found');
+      });
 
     it('should be able to handle nested arrays of strings', function() {
       var searchTerms = [
@@ -116,10 +125,9 @@ describe('BookIndexer tests', function() {
     if (!RUNNING_ON_NODE) {
       it('should not take long to execute', function() {
         var searchTerms = [
-          'alice', 'dwarf', 'king', 'ring', 'wonderland', 'imagination', 'world',
-          'falls',
-          'lord', 'fellowship', 'unusual', 'alliance', 'elf', 'man', 'wizard',
-          'hobbit',
+          'alice', 'dwarf', 'king', 'ring', 'wonderland',
+          'imagination', 'world', 'falls', 'lord', 'fellowship',
+          'unusual', 'alliance', 'elf', 'man', 'wizard', 'hobbit',
           'powerful', 'destroy', 'rabbit', 'hole'
         ];
 
@@ -135,9 +143,11 @@ describe('BookIndexer tests', function() {
 
   describe('Get Index', function() {
 
-    it('should return an accurate index of the contents of the JSON file', function() {
-      expect(indexer.getIndex()).toEqual(indexer.index);
-    });
+    it(
+      'should return an accurate index of the contents of the JSON file',
+      function() {
+        expect(indexer.getIndex()).toEqual(indexer.index);
+      });
 
     it(
       'should return an index of a particular book when given that book\'s index as a parameter',
